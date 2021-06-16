@@ -20,6 +20,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -116,6 +117,14 @@ import com.google.samples.propertyanimation.databinding.ActivityMainBinding
     }
 
     private fun colorizer() {
+        // Here we want to change the background color of the star, so star.parent is our view target.
+        // The propertyName is what the system searches to find (getters and setters) using reflection.
+        val animator = ObjectAnimator.ofArgb(binding.star.parent, "backgroundColor", Color.BLACK, Color.RED)
+        animator.duration = 500
+        animator.repeatCount = 1
+        animator.repeatMode = ObjectAnimator.REVERSE
+        animator.disableViewDuringAnimation(binding.colorizeButton)
+        animator.start()
     }
 
     private fun shower() {
