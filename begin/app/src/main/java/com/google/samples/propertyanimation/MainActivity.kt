@@ -19,6 +19,7 @@ package com.google.samples.propertyanimation
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -96,6 +97,14 @@ import com.google.samples.propertyanimation.databinding.ActivityMainBinding
     }
 
     private fun scaler() {
+        val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 4f)
+        val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 4f)
+        val animator = ObjectAnimator.ofPropertyValuesHolder(binding.star, scaleX, scaleY)
+        animator.disableViewDuringAnimation(binding.scaleButton)
+        // Again, reverse the animation to go back to the initial state of the star
+        animator.repeatCount = 1
+        animator.repeatMode = ObjectAnimator.REVERSE
+        animator.start()
     }
 
     private fun fader() {
