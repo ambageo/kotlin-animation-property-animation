@@ -63,22 +63,36 @@ import com.google.samples.propertyanimation.databinding.ActivityMainBinding
         }
     }
 
+
+     /**
+      * Extension function for disabling/ enabling the animations buttons
+      */
+     private fun ObjectAnimator.disableViewDuringAnimation(view: View){
+         addListener(object:AnimatorListenerAdapter(){
+             override fun onAnimationStart(animation: Animator?) {
+                 view.isEnabled = false
+             }
+
+             override fun onAnimationEnd(animation: Animator?, isReverse: Boolean) {
+                view.isEnabled = true             }
+         })
+     }
+
     private fun rotater() {
         val animator = ObjectAnimator.ofFloat(binding.star, View.ROTATION, -360f, 0f)
         animator.duration = 1000
-        animator.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationStart(animation: Animator?) {
-                binding.rotateButton.isEnabled = false
-            }
-
-            override fun onAnimationEnd(animation: Animator?, isReverse: Boolean) {
-                binding.rotateButton.isEnabled = true
-            }
-        })
+        animator.disableViewDuringAnimation(binding.rotateButton)
         animator.start()
     }
 
      private fun translater() {
+         val animator = ObjectAnimator.ofFloat(binding.star, View.TRANSLATION_X, 200f)
+         // Here we tell the animator to reverse the animation, once. So, after going to the right,
+         // it will go back to the start
+         animator.repeatCount = 1
+         animator.repeatMode = ObjectAnimator.REVERSE
+         animator.disableViewDuringAnimation(binding.translateButton)
+         animator.start()
     }
 
     private fun scaler() {
