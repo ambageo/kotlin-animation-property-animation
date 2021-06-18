@@ -16,16 +16,19 @@
 
 package com.google.samples.propertyanimation
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ObjectAnimator
-import android.animation.PropertyValuesHolder
+import android.animation.*
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.LinearInterpolator
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.animation.addListener
 import androidx.databinding.DataBindingUtil
 import com.google.samples.propertyanimation.databinding.ActivityMainBinding
@@ -128,6 +131,46 @@ import com.google.samples.propertyanimation.databinding.ActivityMainBinding
     }
 
     private fun shower() {
+        val container = binding.star.parent as ViewGroup
+        val containerWidth = container.width
+        val containerHeight = container.height
+        var starWidth = binding.star.width.toFloat()
+        var starHeight = binding.star.height.toFloat()
+        // Create and add a new star
+        val newStar = AppCompatImageView(this)
+        newStar.setImageResource(R.drawable.ic_star)
+        newStar.layoutParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT)
+        container.addView(newStar)
+        newStar.scaleX = Math.random().toFloat() * 1.5f + .1f // Math.random() generates between 0 and 1
+        newStar.scaleY = newStar.scaleX
+        // cache the values to use them later
+        starWidth *= newStar.scaleX
+        starHeight *= newStar.scaleY
+
+        // position the star
+        newStar.translationX = Math.random().toFloat() * containerWidth - starWidth/2
+
+        // Create 2 animator, one for moving and one for rotating
+        val mover = ObjectAnimator.ofFloat(newStar, View.TRANSLATION_Y, -starHeight, containerHeight + starHeight)
+        // Add acceleration so that it imitates gravity
+        mover.interpolator = AccelerateInterpolator(1f)
+
+        val rotator = ObjectAnimator.ofFloat(newStar, View.ROTATION, (Math.random().toFloat() * 1080).toFloat())
+        rotator.interpolator = LinearInterpolator()
+
+        // Put the two animations together in an AnimatorSet, so that they can run in parallel
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(mover, rotator)
+        animatorSet.duration = (Math.random() * 1500 + 500).toLong()
+
+        // Add a listener to remove the star once it has fallen off the bottom
+        animatorSet.addListener(object: AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+              container.removeView(newStar)
+            }
+        })
+        animatorSet.start()
     }
 
 }
